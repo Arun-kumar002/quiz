@@ -6,11 +6,13 @@ export const questionReducer = createSlice({
     initialState : {
         queue: [],
         answers : [],
-        trace : 0
+        trace : 0,
     },
     reducers : {
         startExamAction : (state, action) => {
+            console.log(action,'action');
             let { question, answers} = action.payload
+            
             return {
                 ...state,
                 queue : question,

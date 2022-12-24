@@ -7,15 +7,25 @@ import { PushAnswer } from '../hooks/setResult';
 /** redux store import */
 import { useSelector, useDispatch } from 'react-redux'
 import { Navigate } from 'react-router-dom'
-
+import axios from 'axios';
+import {startExamAction} from './../redux/question_reducer'
 export default function Quiz() {
 
     const [check, setChecked] = useState(undefined)
-
+    const [count,setCount]=useState(0)
     const result = useSelector(state => state.result.result);
     const { queue, trace } = useSelector(state => state.questions);
     const dispatch = useDispatch()
 
+    useEffect(()=>{
+        let fetch=async()=>{
+            let data=await axios.get('http://localhost:5000/api/questions')
+            console.log(data.data[0]);
+            dispatch(startExamAction({question:data.data[0].questions, answers:data.data[0].answers}))
+
+        }
+        fetch()
+    },[])
     /** next button event handler */
     function onNext(){
         if(trace < queue.length){
@@ -30,6 +40,7 @@ export default function Quiz() {
      
         /** reset the value of the checked variable */
         setChecked(undefined)
+        setCount(count+1)
     }
 
     /** Prev button event handler */
@@ -55,7 +66,7 @@ export default function Quiz() {
         <h1 className='title text-light'>Quiz Application</h1>
 
         {/* display questions */}
-        <Questions onChecked={onChecked} />
+        <Questions onChecked={onChecked} count={count}/>
 
         <div className='grid'>
             { trace > 0 ? <button className='btn prev' onClick={onPrev}>Prev</button> : <div></div>}
